@@ -4,6 +4,8 @@ import { registerScanCommand } from './commands/scan.js';
 import { registerExplainCommand } from './commands/explain.js';
 import { registerHardenCommand } from './commands/harden.js';
 import { registerMcpCommand } from './commands/mcp.js';
+import { registerBaselineCommand } from './commands/baseline.js';
+import { registerCheckInstallCommand } from './commands/check-install.js';
 
 const program = new Command();
 
@@ -19,6 +21,8 @@ registerScanCommand(program);
 registerExplainCommand(program);
 registerHardenCommand(program);
 registerMcpCommand(program);
+registerBaselineCommand(program);
+registerCheckInstallCommand(program);
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   console.error(err instanceof Error ? err.message : String(err));

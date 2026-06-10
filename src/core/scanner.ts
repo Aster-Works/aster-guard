@@ -4,6 +4,7 @@ import type { Finding } from '../types/finding.js';
 import { isBlocking } from '../types/finding.js';
 import type { ScanTarget } from '../types/config.js';
 import type { ScanReport } from '../types/report.js';
+import { baselineFindings } from './baseline.js';
 import { discoverFiles, kindForPath, type DiscoveredFile } from './discovery.js';
 import { loadTarget } from './parser.js';
 import { runRules, sortFindings } from './rule-engine.js';
@@ -16,6 +17,8 @@ export interface ScanOptions {
   file?: string;
   /** Also scan ~/.claude.json and ~/.claude/settings.json. Default true. */
   includeHome?: boolean;
+  /** Compare against .aster-guard/baseline.json and report AG-012 changes. */
+  compareBaseline?: boolean;
 }
 
 export async function loadTargets(
@@ -61,6 +64,10 @@ export async function scan(options: ScanOptions = {}): Promise<ScanReport> {
   const findings = runRules(targets);
   for (const t of targets) {
     if (t.parseError) findings.push(parseErrorFinding(t));
+  }
+  if (options.compareBaseline) {
+    const cwd = path.resolve(options.cwd ?? process.cwd());
+    findings.push(...(await baselineFindings(cwd, targets)));
   }
   return buildReport(
     scanRoot,

@@ -25,7 +25,11 @@
     "node": ">=20"
   },
   "packageManager": "pnpm@10.34.2",
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
+    "prepublishOnly": "pnpm run lint && pnpm run typecheck && pnpm run test",
     "build": "tsc -p tsconfig.build.json",
     "test": "pnpm run build && vitest run",
     "typecheck": "tsc --noEmit",

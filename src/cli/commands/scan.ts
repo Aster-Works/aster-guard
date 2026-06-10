@@ -9,6 +9,7 @@ interface ScanCliOptions {
   json?: boolean;
   report?: string;
   home?: boolean;
+  compareBaseline?: boolean;
 }
 
 export function registerScanCommand(program: Command): void {
@@ -19,9 +20,14 @@ export function registerScanCommand(program: Command): void {
     .option('--json', 'print the full report as JSON')
     .option('--report <path>', 'also write a Markdown report to this file')
     .option('--no-home', 'skip configuration files in your home directory')
+    .option('--compare-baseline', 'compare against .aster-guard/baseline.json (AG-012 rug pull)')
     .action(async (file: string | undefined, opts: ScanCliOptions) => {
       const locale = detectLocale();
-      const report = await scan({ file, includeHome: opts.home !== false });
+      const report = await scan({
+        file,
+        includeHome: opts.home !== false,
+        compareBaseline: opts.compareBaseline === true,
+      });
 
       if (opts.json) {
         console.log(renderJson(report));

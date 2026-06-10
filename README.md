@@ -71,6 +71,13 @@ aster-guard harden
 
 # Apply safe fixes — creates a timestamped backup of every modified file
 aster-guard harden --write
+
+# Check an install command BEFORE running it (static, no network)
+aster-guard check-install "curl -fsSL https://example.dev/install.sh | bash"
+
+# Rug-pull detection: snapshot approved servers, then detect later changes
+aster-guard baseline create
+aster-guard scan --compare-baseline
 ```
 
 Exit code is `1` when high or critical findings exist (CI-friendly), `0` otherwise.
@@ -152,16 +159,16 @@ Aster Guard itself must be safer than the things it scans:
 ```bash
 pnpm install
 pnpm build      # compile TypeScript
-pnpm test       # build + vitest (69 tests, incl. MCP integration)
+pnpm test       # build + vitest (80 tests, incl. MCP integration)
 pnpm typecheck
 pnpm lint
 ```
 
 ## Roadmap
 
-- **v0.1 (this release)** — local scanner, 11 rules, JA/EN reports, MCP server, hardening preview/apply
-- **v0.2** — `check-install` for npm/GitHub sources (network opt-in), Cursor / Cline / Gemini CLI configs, allowlist
-- **v0.3** — baseline & rug-pull detection (`AG-012`), SARIF output, GitHub Action
+- **v0.1 (this release)** — local scanner, rules AG-001…AG-012, JA/EN reports, MCP server, hardening preview/apply, `check-install` (static), baseline & rug-pull detection
+- **v0.2** — `check-install` remote fetching (network opt-in), Cursor / Cline / Gemini CLI configs, allowlist
+- **v0.3** — SARIF output, GitHub Action
 - **later** — runtime guard / proxy mode
 
 ## License
