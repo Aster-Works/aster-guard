@@ -61,6 +61,19 @@ describe('extractServers', () => {
     expect(sub?.jsonPath).toBe('projects./some/project.mcpServers.sub');
   });
 
+  it('accepts the VS Code "servers" key when entries look like servers', () => {
+    const servers = extractServers(
+      { servers: { docs: { command: 'npx', args: ['-y', 'pkg'] } } },
+      '/x/.vscode/mcp.json',
+    );
+    expect(servers).toHaveLength(1);
+    expect(servers[0]?.jsonPath).toBe('servers.docs');
+  });
+
+  it('ignores a "servers" key whose values are not server definitions', () => {
+    expect(extractServers({ servers: { a: 'production', b: 'staging' } }, 'f')).toHaveLength(0);
+  });
+
   it('infers type and tolerates malformed entries', () => {
     const servers = extractServers({ mcpServers: { weird: 'not-an-object' } }, 'f');
     expect(servers).toHaveLength(1);

@@ -5,6 +5,7 @@ import {
   renderJson,
   renderMarkdown,
   renderPlainSummary,
+  renderSarif,
   renderTerminal,
 } from '../src/core/report.js';
 
@@ -58,5 +59,24 @@ describe('report rendering', () => {
     expect(text).toContain('Risk Score:');
     expect(text).toContain('AG-005');
     expect(text).not.toContain(RAW_TOKEN);
+  });
+
+  it('renders SARIF 2.1.0 with one result per finding', async () => {
+    const report = await scan({ file: critical });
+    const text = renderSarif(report);
+    expect(text).not.toContain(RAW_TOKEN);
+    const sarif = JSON.parse(text) as {
+      version: string;
+      runs: Array<{
+        tool: { driver: { rules: Array<{ id: string }> } };
+        results: Array<{ ruleId: string; level: string }>;
+      }>;
+    };
+    expect(sarif.version).toBe('2.1.0');
+    expect(sarif.runs[0]?.results).toHaveLength(report.findings.length);
+    expect(sarif.runs[0]?.results.some((r) => r.ruleId === 'AG-005' && r.level === 'error')).toBe(
+      true,
+    );
+    expect(sarif.runs[0]?.tool.driver.rules.some((r) => r.id === 'AG-005')).toBe(true);
   });
 });

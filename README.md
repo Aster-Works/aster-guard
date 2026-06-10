@@ -14,7 +14,7 @@ npx @asterworks/aster-guard scan
 
 ## What it does
 
-- Discovers and scans `.mcp.json`, `~/.claude.json`, `.claude/settings(.local).json`, and `.env*` files
+- Discovers and scans `.mcp.json`, `~/.claude.json`, `.claude/settings(.local).json`, `.env*`, plus Cursor / VS Code / Windsurf / Cline / Gemini CLI MCP configs
 - Detects 11 classes of risk (rules `AG-001` … `AG-011`):
   - hidden agent instructions in tool descriptions (Tool Poisoning / prompt injection)
   - references to sensitive files (`~/.ssh`, AWS credentials, `.env`, …)
@@ -59,6 +59,7 @@ aster-guard scan .mcp.json
 # Machine-readable output / Markdown report
 aster-guard scan --json
 aster-guard scan --report aster-guard-report.md
+aster-guard scan --sarif results.sarif
 
 # Skip files in your home directory
 aster-guard scan --no-home
@@ -167,8 +168,9 @@ pnpm lint
 ## Roadmap
 
 - **v0.1 (this release)** — local scanner, rules AG-001…AG-012, JA/EN reports, MCP server, hardening preview/apply, `check-install` (static), baseline & rug-pull detection
-- **v0.2** — `check-install` remote fetching (network opt-in), Cursor / Cline / Gemini CLI configs, allowlist
-- **v0.3** — SARIF output, GitHub Action
+- also included — Cursor / VS Code / Windsurf / Cline / Gemini CLI config scanning, SARIF output (`--sarif`)
+- **v0.2** — `check-install` remote fetching (network opt-in), allowlist
+- **v0.3** — GitHub Action, team policy file
 - **later** — runtime guard / proxy mode
 
 ## License

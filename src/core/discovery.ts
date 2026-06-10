@@ -11,6 +11,8 @@ export interface DiscoveredFile {
 
 const PROJECT_FILES: ReadonlyArray<{ rel: string; kind: ScanTargetKind }> = [
   { rel: '.mcp.json', kind: 'mcp-config' },
+  { rel: '.cursor/mcp.json', kind: 'mcp-config' },
+  { rel: '.vscode/mcp.json', kind: 'mcp-config' },
   { rel: '.claude/settings.json', kind: 'claude-settings' },
   { rel: '.claude/settings.local.json', kind: 'claude-settings' },
   { rel: '.env', kind: 'env-file' },
@@ -22,6 +24,14 @@ const PROJECT_FILES: ReadonlyArray<{ rel: string; kind: ScanTargetKind }> = [
 const HOME_FILES: ReadonlyArray<{ rel: string; kind: ScanTargetKind }> = [
   { rel: '.claude.json', kind: 'mcp-config' },
   { rel: '.claude/settings.json', kind: 'claude-settings' },
+  { rel: '.cursor/mcp.json', kind: 'mcp-config' },
+  { rel: '.codeium/windsurf/mcp_config.json', kind: 'mcp-config' },
+  { rel: '.gemini/settings.json', kind: 'mcp-config' },
+  {
+    // Cline on macOS
+    rel: 'Library/Application Support/Code/User/globalStorage/saoudrizwan.claude-dev/settings/cline_mcp_settings.json',
+    kind: 'mcp-config',
+  },
 ];
 
 /**

@@ -94,18 +94,30 @@ function normalizeEntry(
  *
  * Note: server commands are never executed — this is pure data extraction.
  */
+function isServerEntry(v: unknown): boolean {
+  return isRecord(v) && (typeof v.command === 'string' || typeof v.url === 'string');
+}
+
+function isServerMap(key: string, value: Record<string, unknown>): boolean {
+  if (key === 'mcpServers') return true;
+  // VS Code's .vscode/mcp.json uses "servers"; only accept that key when the
+  // entries actually look like server definitions, to avoid false matches.
+  if (key !== 'servers') return false;
+  const entries = Object.values(value);
+  return entries.length > 0 && entries.every(isServerEntry);
+}
+
 export function extractServers(json: unknown, sourceFile: string): NormalizedServer[] {
   const out: NormalizedServer[] = [];
   const walk = (node: unknown, segments: string[], depth: number): void => {
     if (depth > 6 || !isRecord(node)) return;
     for (const [key, value] of Object.entries(node)) {
-      if (key === 'mcpServers' && isRecord(value)) {
+      if (!isRecord(value)) continue;
+      if (isServerMap(key, value)) {
         for (const [name, entry] of Object.entries(value)) {
-          out.push(
-            normalizeEntry(name, entry, sourceFile, [...segments, 'mcpServers', name].join('.')),
-          );
+          out.push(normalizeEntry(name, entry, sourceFile, [...segments, key, name].join('.')));
         }
-      } else if (isRecord(value)) {
+      } else {
         walk(value, [...segments, key], depth + 1);
       }
     }

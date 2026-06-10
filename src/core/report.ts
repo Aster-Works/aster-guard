@@ -115,6 +115,48 @@ export function renderJson(report: ScanReport): string {
   return JSON.stringify(report, null, 2);
 }
 
+/** SARIF 2.1.0 output for CI integrations (GitHub code scanning etc.). */
+export function renderSarif(report: ScanReport): string {
+  const levelFor = (s: Severity): 'error' | 'warning' | 'note' =>
+    s === 'critical' || s === 'high' ? 'error' : s === 'medium' ? 'warning' : 'note';
+  const ruleIds = [...new Set(report.findings.map((f) => f.ruleId))].sort();
+  const sarif = {
+    $schema:
+      'https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json',
+    version: '2.1.0',
+    runs: [
+      {
+        tool: {
+          driver: {
+            name: 'Aster Guard MCP',
+            informationUri: 'https://www.npmjs.com/package/@asterworks/aster-guard',
+            version: '0.1.0',
+            rules: ruleIds.map((id) => {
+              const rule = getRule(id);
+              return {
+                id,
+                shortDescription: { text: rule?.nameEn ?? id },
+                fullDescription: { text: rule?.explanationEn ?? '' },
+              };
+            }),
+          },
+        },
+        results: report.findings.map((f) => ({
+          ruleId: f.ruleId,
+          level: levelFor(f.severity),
+          message: {
+            text: f.explanationEn + (f.redactedEvidence ? ` Evidence: ${f.redactedEvidence}` : ''),
+          },
+          locations: f.file
+            ? [{ physicalLocation: { artifactLocation: { uri: 'file://' + encodeURI(f.file) } } }]
+            : [],
+        })),
+      },
+    ],
+  };
+  return JSON.stringify(sarif, null, 2);
+}
+
 /** Compact, color-free summary used by the MCP tools. */
 export function renderPlainSummary(report: ScanReport): string {
   const lines: string[] = [];

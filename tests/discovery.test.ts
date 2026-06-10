@@ -12,6 +12,10 @@ beforeAll(async () => {
   await fs.writeFile(path.join(dir, '.env.local'), 'FOO=bar\n');
   await fs.mkdir(path.join(dir, '.claude'));
   await fs.writeFile(path.join(dir, '.claude', 'settings.json'), '{}');
+  await fs.mkdir(path.join(dir, '.cursor'));
+  await fs.writeFile(path.join(dir, '.cursor', 'mcp.json'), '{"mcpServers":{}}');
+  await fs.mkdir(path.join(dir, '.vscode'));
+  await fs.writeFile(path.join(dir, '.vscode', 'mcp.json'), '{"servers":{}}');
 });
 
 afterAll(async () => {
@@ -25,7 +29,9 @@ describe('discoverFiles', () => {
     expect(byName.get('.mcp.json')).toBe('mcp-config');
     expect(byName.get('.env.local')).toBe('env-file');
     expect(byName.get(path.join('.claude', 'settings.json'))).toBe('claude-settings');
-    expect(found).toHaveLength(3);
+    expect(byName.get(path.join('.cursor', 'mcp.json'))).toBe('mcp-config');
+    expect(byName.get(path.join('.vscode', 'mcp.json'))).toBe('mcp-config');
+    expect(found).toHaveLength(5);
   });
 
   it('returns an empty list for a directory without configs', async () => {
