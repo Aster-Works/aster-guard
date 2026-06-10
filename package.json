@@ -29,7 +29,7 @@
     "build": "tsc -p tsconfig.build.json",
     "test": "pnpm run build && vitest run",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src tests",
+    "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },

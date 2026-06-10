@@ -1,10 +1,5 @@
 import fs from 'node:fs/promises';
-import type {
-  EnvVar,
-  NormalizedServer,
-  ScanTarget,
-  ServerTransport,
-} from '../types/config.js';
+import type { EnvVar, NormalizedServer, ScanTarget, ServerTransport } from '../types/config.js';
 import type { DiscoveredFile } from './discovery.js';
 
 export class ParseError extends Error {
@@ -64,7 +59,9 @@ function normalizeEntry(
 ): NormalizedServer {
   const e = isRecord(entry) ? entry : {};
   const command = typeof e.command === 'string' ? e.command : undefined;
-  const args = Array.isArray(e.args) ? e.args.filter((a): a is string => typeof a === 'string') : [];
+  const args = Array.isArray(e.args)
+    ? e.args.filter((a): a is string => typeof a === 'string')
+    : [];
   const url = typeof e.url === 'string' ? e.url : undefined;
   const declared = typeof e.type === 'string' ? e.type : undefined;
   const type: ServerTransport =

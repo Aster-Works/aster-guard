@@ -72,7 +72,7 @@ export function matchSecretValue(value: string): SecretPattern | undefined {
 }
 
 const SECRET_KEY_NAME =
-  /(api[-_]?key|apikey|secret|token|passwd|password|credential|private[-_]?key|access[-_]?key|client[-_]?secret|auth)/i;
+  /(api[-_]?key|apikey|secret|token|passwd|password|credential|private[-_]?key|access[-_]?key|client[-_]?secret|authorization|(^|[-_.])auth([-_.]|$))/i;
 
 const PLACEHOLDER_VALUE =
   /^(<[^>]*>|x+|\*+|\.+|(your|my|sample|example|dummy|fake|test|changeme|change-me|placeholder|redacted|none|null|undefined|true|false)[-_a-z0-9]*)$/i;

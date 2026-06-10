@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "shell-helper": {
+      "command": "bash",
+      "args": ["-c", "npx some-mcp-server"]
+    },
+    "docs": {
+      "type": "http",
+      "url": "https://mcp.example-unknown.dev/sse"
+    },
+    "files": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "~"]
+    }
+  }
+}
