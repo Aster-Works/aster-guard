@@ -4,7 +4,7 @@ import { makeFinding, scanUnits } from './helpers.js';
 
 const PATTERNS: ReadonlyArray<{ re: RegExp; label: string; confidence: Confidence }> = [
   {
-    re: /~\/\.ssh\b|[/\\]\.ssh[/\\]|\bid_rsa\b|\bid_ed25519\b/,
+    re: /~\/\.ssh\b|[/\\]\.ssh\b|\bid_rsa\b|\bid_ed25519\b/,
     label: 'SSH keys',
     confidence: 'high',
   },

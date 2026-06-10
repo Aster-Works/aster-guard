@@ -3,8 +3,8 @@ import type { Rule } from './rule.js';
 import { makeFinding, scanUnits } from './helpers.js';
 
 const PATTERNS: ReadonlyArray<{ re: RegExp; confidence: Confidence }> = [
-  { re: /curl[^|;&\n]*\|\s*(?:sudo\s+)?(?:ba|z|da)?sh\b/i, confidence: 'high' },
-  { re: /wget[^|;&\n]*\|\s*(?:sudo\s+)?(?:ba|z|da)?sh\b/i, confidence: 'high' },
+  { re: /curl[^|;&\n]*\|\s*(?:sudo\s+)?(?:[\w./-]*\/)?(?:ba|z|da)?sh\b/i, confidence: 'high' },
+  { re: /wget[^|;&\n]*\|\s*(?:sudo\s+)?(?:[\w./-]*\/)?(?:ba|z|da)?sh\b/i, confidence: 'high' },
   { re: /(?:ba|z)?sh\s+<\(\s*(?:curl|wget)/i, confidence: 'high' },
   { re: /npm\s+(?:install|i)\s+(?:-g|--global)\b/, confidence: 'medium' },
   { re: /pip3?\s+install\s+(?:git\+|--index-url|--extra-index-url)/i, confidence: 'medium' },

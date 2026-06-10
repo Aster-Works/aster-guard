@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import type { EnvVar, NormalizedServer, ScanTarget, ServerTransport } from '../types/config.js';
 import type { DiscoveredFile } from './discovery.js';
+import { redactText } from './redaction.js';
 
 export class ParseError extends Error {
   constructor(
@@ -152,7 +153,11 @@ export async function loadTarget(file: DiscoveredFile): Promise<ScanTarget> {
   try {
     raw = await fs.readFile(file.path, 'utf8');
   } catch (err) {
-    base.parseError = `Could not read ${file.path}: ${err instanceof Error ? err.message : String(err)}`;
+    // Error messages may quote file content (e.g. V8 JSON errors on newer
+    // Node versions), so they are redacted like any other evidence.
+    base.parseError = redactText(
+      `Could not read ${file.path}: ${err instanceof Error ? err.message : String(err)}`,
+    );
     return base;
   }
   base.raw = raw;
@@ -166,7 +171,7 @@ export async function loadTarget(file: DiscoveredFile): Promise<ScanTarget> {
     base.json = parseJsonWithLocation(raw, file.path);
     base.servers = extractServers(base.json, file.path);
   } catch (err) {
-    base.parseError = err instanceof Error ? err.message : String(err);
+    base.parseError = redactText(err instanceof Error ? err.message : String(err));
   }
   return base;
 }

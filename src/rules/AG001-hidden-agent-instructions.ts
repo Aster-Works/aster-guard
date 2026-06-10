@@ -1,9 +1,12 @@
 import type { Confidence } from '../types/finding.js';
 import type { Rule } from './rule.js';
-import { makeFinding, scanUnits, truncate } from './helpers.js';
+import { makeFinding, scanUnits } from './helpers.js';
 
 const PHRASES: ReadonlyArray<{ re: RegExp; confidence: Confidence }> = [
-  { re: /ignore\s+(?:all\s+|any\s+)?(?:previous|prior|above)\s+instructions/i, confidence: 'high' },
+  {
+    re: /ignore\s+(?:all\s+|any\s+)?(?:previous\s+|prior\s+|above\s+)?instructions/i,
+    confidence: 'high',
+  },
   { re: /do\s+not\s+(?:tell|inform|notify|alert)\s+the\s+user/i, confidence: 'high' },
   { re: /without\s+(?:mentioning|telling|informing|notifying)/i, confidence: 'high' },
   { re: /hidden\s+instruction/i, confidence: 'high' },
@@ -38,7 +41,9 @@ export const AG001: Rule = {
             target,
             confidence: hit.confidence,
             path: unit.path,
-            evidence: truncate(unit.value),
+            // Pass the raw value: makeFinding redacts first, then truncates.
+            // Truncating here could split a token and defeat redaction.
+            evidence: unit.value,
           }),
         );
       }

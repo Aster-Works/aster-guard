@@ -171,7 +171,10 @@ export async function applyHardenPlan(plan: HardenPlan): Promise<HardenWriteResu
     if (applied.length === 0) continue;
     const backupPath = `${file}.bak-${timestamp()}`;
     await fs.copyFile(file, backupPath);
-    await fs.writeFile(file, JSON.stringify(json, null, 2) + '\n', 'utf8');
+    // Atomic replace: a failed write can never leave the original truncated.
+    const tmpPath = `${file}.tmp-${timestamp()}`;
+    await fs.writeFile(tmpPath, JSON.stringify(json, null, 2) + '\n', 'utf8');
+    await fs.rename(tmpPath, file);
     results.push({ file, backupPath, envVarNames: applied });
   }
   return results;

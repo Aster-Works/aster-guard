@@ -3,8 +3,12 @@ import type { Rule } from './rule.js';
 import { makeFinding, scanUnits } from './helpers.js';
 
 const PATTERNS: ReadonlyArray<{ re: RegExp; confidence: Confidence }> = [
-  { re: /\brm\s+(?:-[a-zA-Z]+\s+)*-[a-zA-Z]*(?:rf|fr)[a-zA-Z]*\b/, confidence: 'high' },
-  { re: /\brm\s+-[a-zA-Z]*r[a-zA-Z]*\s+-[a-zA-Z]*f\b/, confidence: 'high' },
+  // `rm` followed (within the same shell segment) by flags containing both
+  // r/R and f/F, in any order or combination: rm -rf, rm -fR, rm -f -r, …
+  {
+    re: /\brm\b(?=[^|;&\n]*\s-[a-zA-Z]*[rR])(?=[^|;&\n]*\s-[a-zA-Z]*[fF])/,
+    confidence: 'high',
+  },
   { re: /\bdel\s+\/s\b/i, confidence: 'high' },
   { re: /\bformat\s+[a-z]:/i, confidence: 'high' },
   { re: /\bmkfs(?:\.[a-z0-9]+)?\b/i, confidence: 'high' },
