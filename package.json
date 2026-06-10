@@ -1,0 +1,53 @@
+{
+  "name": "@asterworks/aster-guard",
+  "version": "0.1.0",
+  "description": "A lightweight MCP security guard for Claude Code users and indie AI builders. Claude Codeユーザーのための、接続前MCPセキュリティ診断ツール。",
+  "license": "MIT",
+  "author": "Aster Works",
+  "type": "module",
+  "bin": {
+    "aster-guard": "dist/cli/index.js"
+  },
+  "main": "dist/cli/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "mcp",
+    "security",
+    "claude-code",
+    "scanner",
+    "model-context-protocol"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.34.2",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "test": "pnpm run build && vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src tests",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "commander": "^15.0.0",
+    "fast-glob": "^3.3.3",
+    "picocolors": "^1.1.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/node": "^20.19.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.0",
+    "prettier": "^3.6.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.61.0",
+    "vitest": "^4.1.8"
+  }
+}
