@@ -1,5 +1,8 @@
 # Aster Guard MCP
 
+[![npm version](https://img.shields.io/npm/v/%40asterworks%2Faster-guard)](https://www.npmjs.com/package/@asterworks/aster-guard)
+[![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
 > A lightweight MCP security guard for Claude Code users and indie AI builders.
 >
 > Claude Codeユーザーのための、接続前MCPセキュリティ診断ツール。

@@ -1,6 +1,14 @@
 {
   "name": "@asterworks/aster-guard",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jimiaki7/aster-guard.git"
+  },
+  "homepage": "https://github.com/jimiaki7/aster-guard#readme",
+  "bugs": {
+    "url": "https://github.com/jimiaki7/aster-guard/issues"
+  },
   "description": "A lightweight MCP security guard for Claude Code users and indie AI builders. Claude Codeユーザーのための、接続前MCPセキュリティ診断ツール。",
   "license": "MIT",
   "author": "Aster Works",
@@ -12,6 +20,7 @@
   "files": [
     "dist",
     "README.md",
+    "CHANGELOG.md",
     "LICENSE"
   ],
   "keywords": [
