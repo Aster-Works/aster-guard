@@ -201,6 +201,16 @@ describe('AG-008 tool shadowing', () => {
   });
 });
 
+describe('user-approved permission rules', () => {
+  it('downgrades findings inside permissions.allow to info', () => {
+    const t = settingsTarget({ permissions: { allow: ['Bash(python3 -c "print(1)")'] } });
+    const findings = AG009.check(t);
+    expect(findings).toHaveLength(1);
+    expect(findings[0]?.severity).toBe('info');
+    expect(findings[0]?.confidence).toBe('low');
+  });
+});
+
 describe('AG-009 obfuscation', () => {
   it('flags inline eval', () => {
     const t = server({ command: 'node', args: ['-e', "eval(atob('x'))"] });

@@ -111,15 +111,30 @@ export interface FindingOptions {
   explanationJa?: string;
 }
 
+/**
+ * Strings under `permissions.allow` / `permissions.ask` in Claude settings
+ * are permission patterns the user already approved themselves — not content
+ * supplied by a third-party MCP server. They are still surfaced, but as
+ * info-level notes so a user's own allowlist doesn't tank the score.
+ */
+const USER_APPROVED_PERMISSION_PATH = /(^|\.)permissions\.(allow|ask)\[/;
+
 export function makeFinding(rule: RuleMeta, opts: FindingOptions): Finding {
   const evidence = opts.evidence === undefined ? undefined : truncate(redactText(opts.evidence));
-  const explanationEn = opts.explanationEn ?? rule.explanationEn;
-  const explanationJa = opts.explanationJa ?? rule.explanationJa;
+  let explanationEn = opts.explanationEn ?? rule.explanationEn;
+  let explanationJa = opts.explanationJa ?? rule.explanationJa;
+  const userApproved = opts.path !== undefined && USER_APPROVED_PERMISSION_PATH.test(opts.path);
+  if (userApproved) {
+    explanationEn +=
+      ' Found in a permission rule you approved yourself, so it is reported as info only.';
+    explanationJa +=
+      ' これはあなた自身が承認したpermissionsルール内での検出のため、情報レベルとして報告しています。';
+  }
   return {
     ruleId: rule.id,
     title: rule.nameEn,
-    severity: opts.severity ?? rule.severity,
-    confidence: opts.confidence,
+    severity: userApproved ? 'info' : (opts.severity ?? rule.severity),
+    confidence: userApproved ? 'low' : opts.confidence,
     file: opts.target.file,
     path: opts.path,
     evidence,
