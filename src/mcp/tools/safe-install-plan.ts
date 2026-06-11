@@ -1,6 +1,11 @@
 import { z } from 'zod';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { analyzeInstallSource, INSTALL_CHECKLIST } from '../../core/install-check.js';
+import {
+  analyzeInstallSource,
+  analyzeRemote,
+  INSTALL_CHECKLIST,
+  renderRemoteSignals,
+} from '../../core/install-check.js';
 
 export function registerSafeInstallPlan(server: McpServer): void {
   server.registerTool(
@@ -8,19 +13,19 @@ export function registerSafeInstallPlan(server: McpServer): void {
     {
       title: 'Evaluate an MCP install command',
       description:
-        'Statically analyze a proposed MCP server install command, package name, or repository URL ' +
-        'and return detected risks plus a safety checklist. v0.1 never fetches remote code — only ' +
-        'the given string is analyzed.',
+        'Analyze a proposed MCP server install command, package name, or repository URL and return ' +
+        'detected risks plus a safety checklist. Static analysis by default; with allowNetwork=true ' +
+        'it also fetches npm/GitHub metadata over HTTPS (JSON only — code is never downloaded or executed).',
       inputSchema: {
         source: z.string().describe('Install command, npm package, or repository URL'),
         allowNetwork: z
           .boolean()
           .default(false)
-          .describe('Ignored in v0.1: remote fetching is not implemented yet'),
+          .describe('Also check npm/GitHub metadata (existence, install scripts, age, downloads)'),
       },
       annotations: { readOnlyHint: true },
     },
-    ({ source, allowNetwork }) => {
+    async ({ source, allowNetwork }) => {
       const findings = analyzeInstallSource(source);
       const lines: string[] = [];
       if (findings.length === 0) {
@@ -35,12 +40,15 @@ export function registerSafeInstallPlan(server: McpServer): void {
           lines.push(`  fix: ${f.recommendationJa}`);
         }
       }
+      if (allowNetwork) {
+        const signals = await analyzeRemote(source);
+        lines.push('');
+        lines.push('Remote check (metadata only) / リモート検査:');
+        for (const s of signals) lines.push(`- [${s.level}] ${s.en}`, `  ${s.ja}`);
+        if (signals.length === 0) lines.push(...renderRemoteSignals(signals, 'en'));
+      }
       lines.push('');
       lines.push(INSTALL_CHECKLIST);
-      if (allowNetwork) {
-        lines.push('');
-        lines.push('Note: allowNetwork is ignored in v0.1; no remote code was fetched.');
-      }
       return { content: [{ type: 'text', text: lines.join('\n') }] };
     },
   );

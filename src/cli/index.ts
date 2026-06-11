@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { VERSION } from '../version.js';
 import { registerScanCommand } from './commands/scan.js';
 import { registerExplainCommand } from './commands/explain.js';
 import { registerHardenCommand } from './commands/harden.js';
@@ -15,7 +16,7 @@ program
     'A lightweight MCP security guard for Claude Code users and indie AI builders.\n' +
       'Claude Codeユーザーのための、接続前MCPセキュリティ診断ツール。',
   )
-  .version('0.1.0');
+  .version(VERSION);
 
 registerScanCommand(program);
 registerExplainCommand(program);

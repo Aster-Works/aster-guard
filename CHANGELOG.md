@@ -1,7 +1,11 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 (2026-06-11)
 
+- `check-install --allow-network`: opt-in npm/GitHub **metadata** checks — package existence
+  (hallucinated/slopsquatted names), install-time scripts (preinstall/postinstall), package age,
+  weekly downloads, deprecation, archived/stale repos, star count. JSON over HTTPS only;
+  code is never downloaded or executed. The `safe_install_plan` MCP tool honors `allowNetwork` too.
 - `scan --fail-on <severity>`: configurable exit-code threshold (critical|high|medium|low|info|never)
 - `scan <directory>`: a directory argument now runs config discovery inside it
 - Composite GitHub Action (`uses: jimiaki7/aster-guard@main`) with `path` / `fail-on` / `sarif` inputs

@@ -1,6 +1,7 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import type { ScanReport } from '../types/report.js';
+import { VERSION } from '../version.js';
 import { registerScanWorkspace } from './tools/scan-workspace.js';
 import { registerScanMcpConfig } from './tools/scan-mcp-config.js';
 import { registerExplainFinding } from './tools/explain-finding.js';
@@ -19,7 +20,7 @@ export interface McpState {
  * the network.
  */
 export async function startMcpServer(): Promise<void> {
-  const server = new McpServer({ name: 'aster-guard', version: '0.1.0' });
+  const server = new McpServer({ name: 'aster-guard', version: VERSION });
   const state: McpState = { lastReport: null };
 
   registerScanWorkspace(server, state);

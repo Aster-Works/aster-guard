@@ -5,6 +5,7 @@ import type { Grade, ScanReport } from '../types/report.js';
 import { getMessages, type Locale } from '../i18n/index.js';
 import { getRule } from '../rules/index.js';
 import { computeRiskScore, gradeForScore } from './scoring.js';
+import { VERSION } from '../version.js';
 
 export function countBySeverity(findings: readonly Finding[]): Record<Severity, number> {
   const counts: Record<Severity, number> = { critical: 0, high: 0, medium: 0, low: 0, info: 0 };
@@ -130,7 +131,7 @@ export function renderSarif(report: ScanReport): string {
           driver: {
             name: 'Aster Guard MCP',
             informationUri: 'https://www.npmjs.com/package/@asterworks/aster-guard',
-            version: '0.1.0',
+            version: VERSION,
             rules: ruleIds.map((id) => {
               const rule = getRule(id);
               return {

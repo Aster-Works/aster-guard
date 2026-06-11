@@ -79,6 +79,9 @@ aster-guard harden --write
 # Check an install command BEFORE running it (static, no network)
 aster-guard check-install "curl -fsSL https://example.dev/install.sh | bash"
 
+# Opt-in remote metadata checks: does the package even exist? install scripts? age? downloads?
+aster-guard check-install npm:some-mcp-package --allow-network
+
 # Rug-pull detection: snapshot approved servers, then detect later changes
 aster-guard baseline create
 aster-guard scan --compare-baseline
@@ -192,8 +195,8 @@ pnpm lint
 - **v0.1 (this release)** — local scanner, rules AG-001…AG-012, JA/EN reports, MCP server, hardening preview/apply, `check-install` (static), baseline & rug-pull detection
 - also included — Cursor / VS Code / Windsurf / Cline / Gemini CLI config scanning, SARIF output (`--sarif`)
 - also included — GitHub Action (composite, `uses: jimiaki7/aster-guard@main`) with `fail-on` threshold
-- **v0.2** — `check-install` remote fetching (network opt-in), allowlist
-- **v0.3** — team policy file
+- **v0.2 (this release)** — `check-install --allow-network`: npm/GitHub metadata checks (existence, install scripts, age, downloads). Metadata JSON only — code is never downloaded or executed
+- **next** — allowlist, team policy file
 - **later** — runtime guard / proxy mode
 
 ## License
