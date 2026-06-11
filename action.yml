@@ -1,0 +1,36 @@
+name: 'Aster Guard MCP'
+description: 'Scan MCP / Claude Code configuration files for security issues before connecting them.'
+author: 'Aster Works'
+branding:
+  icon: 'shield'
+  color: 'purple'
+
+inputs:
+  path:
+    description: 'File or directory to scan (directory runs config discovery)'
+    required: false
+    default: '.'
+  fail-on:
+    description: 'Fail the step at or above this severity: critical | high | medium | low | info | never'
+    required: false
+    default: 'high'
+  sarif:
+    description: 'Also write a SARIF 2.1.0 report to this path (upload it with github/codeql-action/upload-sarif)'
+    required: false
+    default: ''
+  version:
+    description: 'Version of @asterworks/aster-guard to run'
+    required: false
+    default: 'latest'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run Aster Guard scan
+      shell: bash
+      run: |
+        ARGS=(scan "${{ inputs.path }}" --no-home --fail-on "${{ inputs.fail-on }}")
+        if [ -n "${{ inputs.sarif }}" ]; then
+          ARGS+=(--sarif "${{ inputs.sarif }}")
+        fi
+        npx -y "@asterworks/aster-guard@${{ inputs.version }}" "${ARGS[@]}"

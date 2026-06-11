@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import type { Finding } from '../types/finding.js';
-import { isBlocking } from '../types/finding.js';
+import type { Finding, Severity } from '../types/finding.js';
+import { severityRank } from '../types/finding.js';
 import type { ScanTarget } from '../types/config.js';
 import type { ScanReport } from '../types/report.js';
 import { baselineFindings } from './baseline.js';
@@ -26,17 +26,23 @@ export async function loadTargets(
 ): Promise<{ scanRoot: string; targets: ScanTarget[] }> {
   const cwd = path.resolve(options.cwd ?? process.cwd());
   let discovered: DiscoveredFile[];
+  let scanRoot = cwd;
   if (options.file) {
     const abs = path.resolve(cwd, options.file);
     if (!fs.existsSync(abs)) {
       throw new Error(`File not found: ${abs}`);
     }
-    discovered = [{ path: abs, kind: kindForPath(abs) }];
+    scanRoot = abs;
+    if (fs.statSync(abs).isDirectory()) {
+      discovered = await discoverFiles(abs, options.includeHome ?? true);
+    } else {
+      discovered = [{ path: abs, kind: kindForPath(abs) }];
+    }
   } else {
     discovered = await discoverFiles(cwd, options.includeHome ?? true);
   }
   const targets = await Promise.all(discovered.map(loadTarget));
-  return { scanRoot: options.file ? path.resolve(cwd, options.file) : cwd, targets };
+  return { scanRoot, targets };
 }
 
 function parseErrorFinding(target: ScanTarget): Finding {
@@ -76,7 +82,11 @@ export async function scan(options: ScanOptions = {}): Promise<ScanReport> {
   );
 }
 
-/** Exit-code policy: high or critical findings mean "do not connect yet". */
-export function hasBlockingFindings(report: ScanReport): boolean {
-  return report.findings.some((f) => isBlocking(f.severity));
+/**
+ * Exit-code policy: findings at or above the threshold mean "do not connect
+ * yet". Default threshold is `high` (i.e. high or critical findings block).
+ */
+export function hasBlockingFindings(report: ScanReport, threshold: Severity = 'high'): boolean {
+  const rank = severityRank(threshold);
+  return report.findings.some((f) => severityRank(f.severity) <= rank);
 }

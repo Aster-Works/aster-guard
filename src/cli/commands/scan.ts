@@ -11,20 +11,34 @@ interface ScanCliOptions {
   home?: boolean;
   compareBaseline?: boolean;
   sarif?: string;
+  failOn?: string;
 }
+
+const FAIL_ON_VALUES = ['critical', 'high', 'medium', 'low', 'info', 'never'] as const;
 
 export function registerScanCommand(program: Command): void {
   program
     .command('scan')
-    .argument('[file]', 'scan a single configuration file instead of auto-discovery')
+    .argument('[file]', 'a config file to scan, or a directory to run discovery in')
     .description('Scan MCP / Claude Code configuration files for security issues')
     .option('--json', 'print the full report as JSON')
     .option('--report <path>', 'also write a Markdown report to this file')
     .option('--no-home', 'skip configuration files in your home directory')
     .option('--compare-baseline', 'compare against .aster-guard/baseline.json (AG-012 rug pull)')
     .option('--sarif <path>', 'also write a SARIF 2.1.0 report to this file')
+    .option(
+      '--fail-on <severity>',
+      `exit 1 at or above this severity (${FAIL_ON_VALUES.join('|')})`,
+      'high',
+    )
     .action(async (file: string | undefined, opts: ScanCliOptions) => {
       const locale = detectLocale();
+      const failOn = (opts.failOn ?? 'high').toLowerCase() as (typeof FAIL_ON_VALUES)[number];
+      if (!FAIL_ON_VALUES.includes(failOn)) {
+        console.error(`--fail-on must be one of: ${FAIL_ON_VALUES.join(', ')}`);
+        process.exitCode = 2;
+        return;
+      }
       const report = await scan({
         file,
         includeHome: opts.home !== false,
@@ -61,7 +75,7 @@ export function registerScanCommand(program: Command): void {
         }
       }
 
-      if (hasBlockingFindings(report)) {
+      if (failOn !== 'never' && hasBlockingFindings(report, failOn)) {
         process.exitCode = 1;
       }
     });

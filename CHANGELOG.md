@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- `scan --fail-on <severity>`: configurable exit-code threshold (critical|high|medium|low|info|never)
+- `scan <directory>`: a directory argument now runs config discovery inside it
+- Composite GitHub Action (`uses: jimiaki7/aster-guard@main`) with `path` / `fail-on` / `sarif` inputs
+- CI workflow (lint, typecheck, tests, demo self-scan)
+- `examples/demo-risky.mcp.json` demo fixture
+
 ## 0.1.1 (2026-06-11)
 
 - Add repository / homepage / bugs metadata for the npm page (no code changes)

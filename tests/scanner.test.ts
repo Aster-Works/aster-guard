@@ -41,6 +41,23 @@ describe('scan end-to-end', () => {
     expect(JSON.stringify(report)).not.toContain('sk-FakeFixture1234567890abcdefXYZ');
   });
 
+  it('scans a directory argument via discovery', async () => {
+    const report = await scan({
+      file: path.join(__dirname, 'fixtures', 'safe'),
+      includeHome: false,
+    });
+    expect(report.scannedFiles).toHaveLength(1);
+    expect(report.grade).toBe('A');
+  });
+
+  it('supports severity thresholds for blocking', async () => {
+    const risky = await scan({ file: fixture('risky') });
+    expect(hasBlockingFindings(risky, 'high')).toBe(true);
+    expect(hasBlockingFindings(risky, 'critical')).toBe(false); // risky has no criticals
+    const safe = await scan({ file: fixture('safe') });
+    expect(hasBlockingFindings(safe, 'info')).toBe(false);
+  });
+
   it('throws a clear error for missing files', async () => {
     await expect(scan({ file: '/no/such/file.json' })).rejects.toThrow('File not found');
   });

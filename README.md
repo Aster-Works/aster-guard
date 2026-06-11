@@ -85,6 +85,7 @@ aster-guard scan --compare-baseline
 ```
 
 Exit code is `1` when high or critical findings exist (CI-friendly), `0` otherwise.
+Tune the threshold with `--fail-on critical|high|medium|low|info|never`.
 
 The terminal report is shown in Japanese when your locale starts with `ja`, English otherwise.
 
@@ -115,6 +116,24 @@ Claude Code can then use these read-only tools:
 | `generate_report`   | Render the last scan as Markdown or JSON                |
 
 Example prompt: _「このプロジェクトのMCP設定をAster Guardでスキャンして」_
+
+## GitHub Actions
+
+```yaml
+- uses: jimiaki7/aster-guard@main
+  with:
+    path: .
+    fail-on: high
+    sarif: results.sarif
+
+# optional: show findings in the GitHub Security tab
+- uses: github/codeql-action/upload-sarif@v3
+  if: always()
+  with:
+    sarif_file: results.sarif
+```
+
+Or simply: `npx -y @asterworks/aster-guard scan --no-home --sarif results.sarif`.
 
 ## Example: a risky `.mcp.json`
 
@@ -172,8 +191,9 @@ pnpm lint
 
 - **v0.1 (this release)** — local scanner, rules AG-001…AG-012, JA/EN reports, MCP server, hardening preview/apply, `check-install` (static), baseline & rug-pull detection
 - also included — Cursor / VS Code / Windsurf / Cline / Gemini CLI config scanning, SARIF output (`--sarif`)
+- also included — GitHub Action (composite, `uses: jimiaki7/aster-guard@main`) with `fail-on` threshold
 - **v0.2** — `check-install` remote fetching (network opt-in), allowlist
-- **v0.3** — GitHub Action, team policy file
+- **v0.3** — team policy file
 - **later** — runtime guard / proxy mode
 
 ## License
