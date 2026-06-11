@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 (2026-06-11)
 
 - Team policy file `.aster-guard/policy.json` (`aster-guard policy init`):
   - `allowedRemoteHosts` — hosts AG-007 should trust (supports `*.domain` wildcards)

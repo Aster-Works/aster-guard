@@ -208,12 +208,10 @@ pnpm lint
 
 ## Roadmap
 
-- **v0.1 (this release)** — local scanner, rules AG-001…AG-012, JA/EN reports, MCP server, hardening preview/apply, `check-install` (static), baseline & rug-pull detection
-- also included — Cursor / VS Code / Windsurf / Cline / Gemini CLI config scanning, SARIF output (`--sarif`)
-- also included — GitHub Action (composite, `uses: jimiaki7/aster-guard@main`) with `fail-on` threshold
-- **v0.2 (this release)** — `check-install --allow-network`: npm/GitHub metadata checks (existence, install scripts, age, downloads). Metadata JSON only — code is never downloaded or executed
-- **next** — allowlist, team policy file
-- **later** — runtime guard / proxy mode
+- **v0.1** — local scanner (AG-001…AG-012), JA/EN reports, MCP server, hardening, baseline & rug-pull detection, multi-editor config scanning, SARIF output
+- **v0.2** — `check-install --allow-network` (npm/GitHub metadata checks), `--fail-on`, composite GitHub Action
+- **v0.3 (this release)** — team policy file: remote-host allowlist, rule suppression, team-wide fail threshold
+- **later** — runtime guard / proxy mode (planned only after real-world demand)
 
 ## License
 
