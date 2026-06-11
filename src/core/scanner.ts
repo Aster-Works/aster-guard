@@ -5,6 +5,8 @@ import { severityRank } from '../types/finding.js';
 import type { ScanTarget } from '../types/config.js';
 import type { ScanReport } from '../types/report.js';
 import { baselineFindings } from './baseline.js';
+import { loadPolicy, policyFilePath } from './policy.js';
+import { allRules, normalizeRuleId } from '../rules/index.js';
 import { discoverFiles, kindForPath, type DiscoveredFile } from './discovery.js';
 import { loadTarget } from './parser.js';
 import { runRules, sortFindings } from './rule-engine.js';
@@ -67,19 +69,47 @@ function parseErrorFinding(target: ScanTarget): Finding {
  */
 export async function scan(options: ScanOptions = {}): Promise<ScanReport> {
   const { scanRoot, targets } = await loadTargets(options);
-  const findings = runRules(targets);
+  const cwd = path.resolve(options.cwd ?? process.cwd());
+  const { policy, error: policyError } = await loadPolicy(cwd);
+
+  const findings = runRules(targets, allRules, { policy });
   for (const t of targets) {
     if (t.parseError) findings.push(parseErrorFinding(t));
   }
   if (options.compareBaseline) {
-    const cwd = path.resolve(options.cwd ?? process.cwd());
     findings.push(...(await baselineFindings(cwd, targets)));
+  }
+
+  let all = findings;
+  if (policy.ignoreRules && policy.ignoreRules.length > 0) {
+    const ignored = new Set(policy.ignoreRules.map(normalizeRuleId));
+    all = all.filter((f) => !ignored.has(normalizeRuleId(f.ruleId)));
+  }
+  if (policyError) {
+    all.push(policyErrorFinding(cwd, policyError));
   }
   return buildReport(
     scanRoot,
     targets.map((t) => t.file),
-    sortFindings(findings),
+    sortFindings(all),
   );
+}
+
+function policyErrorFinding(cwd: string, message: string): Finding {
+  return {
+    ruleId: 'AG-000',
+    title: 'Invalid policy file',
+    severity: 'low',
+    confidence: 'high',
+    file: policyFilePath(cwd),
+    evidence: message,
+    redactedEvidence: message,
+    explanationEn: `The team policy file could not be applied: ${message}`,
+    explanationJa: `ポリシーファイルを適用できなかったため、無視されました: ${message}`,
+    recommendationEn: 'Fix the policy file ("aster-guard policy init" shows the expected shape).',
+    recommendationJa:
+      'ポリシーファイルを修正してください（雛形は「aster-guard policy init」で確認できます）。',
+  };
 }
 
 /**

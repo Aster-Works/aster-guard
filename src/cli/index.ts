@@ -7,6 +7,7 @@ import { registerHardenCommand } from './commands/harden.js';
 import { registerMcpCommand } from './commands/mcp.js';
 import { registerBaselineCommand } from './commands/baseline.js';
 import { registerCheckInstallCommand } from './commands/check-install.js';
+import { registerPolicyCommand } from './commands/policy.js';
 
 const program = new Command();
 
@@ -24,6 +25,7 @@ registerHardenCommand(program);
 registerMcpCommand(program);
 registerBaselineCommand(program);
 registerCheckInstallCommand(program);
+registerPolicyCommand(program);
 
 program.parseAsync(process.argv).catch((err: unknown) => {
   console.error(err instanceof Error ? err.message : String(err));

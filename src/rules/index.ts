@@ -36,4 +36,12 @@ export function getRule(id: string): Rule | undefined {
   return allRules.find((r) => r.id.replace(/[^A-Z0-9]/g, '') === normalized);
 }
 
-export type { Rule, RuleMeta } from './rule.js';
+/** Normalize "ag007" / "AG-007" / "AG007" to a comparable form. */
+export function normalizeRuleId(id: string): string {
+  return id
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
+}
+
+export type { Rule, RuleContext, RuleMeta } from './rule.js';

@@ -1,5 +1,6 @@
 import type { Rule } from './rule.js';
 import { makeFinding } from './helpers.js';
+import { hostMatches } from '../core/policy.js';
 
 const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '0.0.0.0']);
 
@@ -16,7 +17,7 @@ export const AG007: Rule = {
     'Verify who operates this URL and why you trust it. Prefer HTTPS, and remove the entry if you no longer use it.',
   recommendationJa:
     'このURLの運営者が誰か、信頼できる根拠は何かを確認してください。必ずHTTPSを使い、使っていない接続先は設定から削除しましょう。',
-  check(target) {
+  check(target, context) {
     const findings = [];
     for (const server of target.servers) {
       if (!server.url) continue;
@@ -30,6 +31,7 @@ export const AG007: Rule = {
         continue; // not a parsable URL; nothing to assess
       }
       if (LOCAL_HOSTS.has(host)) continue;
+      if (hostMatches(host, context?.policy?.allowedRemoteHosts)) continue;
       findings.push(
         makeFinding(AG007, {
           target,

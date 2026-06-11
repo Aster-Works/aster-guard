@@ -2,6 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import type { Command } from 'commander';
 import { hasBlockingFindings, scan } from '../../core/scanner.js';
+import { loadPolicy } from '../../core/policy.js';
 import { renderJson, renderMarkdown, renderSarif, renderTerminal } from '../../core/report.js';
 import { detectLocale } from '../../i18n/index.js';
 
@@ -28,17 +29,19 @@ export function registerScanCommand(program: Command): void {
     .option('--sarif <path>', 'also write a SARIF 2.1.0 report to this file')
     .option(
       '--fail-on <severity>',
-      `exit 1 at or above this severity (${FAIL_ON_VALUES.join('|')})`,
-      'high',
+      `exit 1 at or above this severity (${FAIL_ON_VALUES.join('|')}); ` +
+        'default comes from .aster-guard/policy.json failOn, else "high"',
     )
     .action(async (file: string | undefined, opts: ScanCliOptions) => {
       const locale = detectLocale();
-      const failOn = (opts.failOn ?? 'high').toLowerCase() as (typeof FAIL_ON_VALUES)[number];
-      if (!FAIL_ON_VALUES.includes(failOn)) {
+      const explicit = opts.failOn?.toLowerCase() as (typeof FAIL_ON_VALUES)[number] | undefined;
+      if (explicit !== undefined && !FAIL_ON_VALUES.includes(explicit)) {
         console.error(`--fail-on must be one of: ${FAIL_ON_VALUES.join(', ')}`);
         process.exitCode = 2;
         return;
       }
+      const { policy } = await loadPolicy(process.cwd());
+      const failOn = explicit ?? policy.failOn ?? 'high';
       const report = await scan({
         file,
         includeHome: opts.home !== false,

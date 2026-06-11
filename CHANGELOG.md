@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Team policy file `.aster-guard/policy.json` (`aster-guard policy init`):
+  - `allowedRemoteHosts` — hosts AG-007 should trust (supports `*.domain` wildcards)
+  - `ignoreRules` — suppress findings of specific rules
+  - `failOn` — team-wide default for the scan exit-code threshold (CLI `--fail-on` overrides)
+- Invalid policy files are reported as a low finding instead of breaking the scan
+
 ## 0.2.0 (2026-06-11)
 
 - `check-install --allow-network`: opt-in npm/GitHub **metadata** checks — package existence

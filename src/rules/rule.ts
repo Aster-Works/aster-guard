@@ -1,5 +1,10 @@
 import type { Finding, Severity } from '../types/finding.js';
 import type { ScanTarget } from '../types/config.js';
+import type { AsterGuardPolicy } from '../core/policy.js';
+
+export interface RuleContext {
+  policy?: AsterGuardPolicy;
+}
 
 export interface RuleMeta {
   id: string;
@@ -13,5 +18,5 @@ export interface RuleMeta {
 }
 
 export interface Rule extends RuleMeta {
-  check(target: ScanTarget): Finding[];
+  check(target: ScanTarget, context?: RuleContext): Finding[];
 }
