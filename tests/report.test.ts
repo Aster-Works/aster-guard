@@ -29,6 +29,27 @@ describe('report rendering', () => {
     expect(out).not.toContain(RAW_TOKEN);
   });
 
+  it('shows both Japanese and English for each finding (terminal)', async () => {
+    const report = await scan({ file: critical });
+    const ja = renderTerminal(report, 'ja');
+    // Japanese-primary report carries the English recommendation label too.
+    expect(ja).toContain('対策:');
+    expect(ja).toContain('Recommendation:');
+    const en = renderTerminal(report, 'en');
+    expect(en).toContain('Recommendation:');
+    expect(en).toContain('対策:');
+    expect(ja).not.toContain(RAW_TOKEN);
+    expect(en).not.toContain(RAW_TOKEN);
+  });
+
+  it('shows both languages for each finding (markdown)', async () => {
+    const report = await scan({ file: critical });
+    const md = renderMarkdown(report, 'ja');
+    expect(md).toContain('**対策:**');
+    expect(md).toContain('**Recommendation:**');
+    expect(md).not.toContain(RAW_TOKEN);
+  });
+
   it('renders Markdown with the spec sections', async () => {
     const report = await scan({ file: critical });
     const md = renderMarkdown(report, 'ja');

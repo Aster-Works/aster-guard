@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Terminal and Markdown reports are now bilingual: each finding shows its explanation and
+  recommendation in the primary (locale) language followed by the other language. Labels,
+  score, and structure stay in the locale language. JSON/SARIF are unchanged (already bilingual).
+
 ## 0.3.0 (2026-06-11)
 
 - Team policy file `.aster-guard/policy.json` (`aster-guard policy init`):

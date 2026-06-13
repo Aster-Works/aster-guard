@@ -70,9 +70,21 @@ function findingDisplayName(f: Finding, locale: Locale): string {
   return locale === 'ja' && rule ? rule.nameJa : f.title;
 }
 
+const otherLocale = (locale: Locale): Locale => (locale === 'ja' ? 'en' : 'ja');
+
+function explanationFor(f: Finding, locale: Locale): string {
+  return locale === 'ja' ? f.explanationJa : f.explanationEn;
+}
+
+function recommendationFor(f: Finding, locale: Locale): string {
+  return locale === 'ja' ? f.recommendationJa : f.recommendationEn;
+}
+
 /** Human-friendly terminal report (Japanese when the system locale is ja). */
 export function renderTerminal(report: ScanReport, locale: Locale): string {
   const m = getMessages(locale);
+  const second = otherLocale(locale);
+  const mSecond = getMessages(second);
   const lines: string[] = [];
   lines.push(pc.bold(m.reportTitle));
   lines.push('');
@@ -102,10 +114,10 @@ export function renderTerminal(report: ScanReport, locale: Locale): string {
       );
       if (f.file) lines.push(`  ${m.file}: ${f.file}${f.path ? `  (${f.path})` : ''}`);
       if (f.redactedEvidence) lines.push(`  ${m.evidence}: ${f.redactedEvidence}`);
-      lines.push(`  ${locale === 'ja' ? f.explanationJa : f.explanationEn}`);
-      lines.push(
-        `  ${m.recommendation}: ${locale === 'ja' ? f.recommendationJa : f.recommendationEn}`,
-      );
+      lines.push(`  ${explanationFor(f, locale)}`);
+      lines.push(pc.dim(`  ${explanationFor(f, second)}`));
+      lines.push(`  ${m.recommendation}: ${recommendationFor(f, locale)}`);
+      lines.push(pc.dim(`  ${mSecond.recommendation}: ${recommendationFor(f, second)}`));
       lines.push('');
     }
   }
@@ -206,6 +218,8 @@ const SAFE_SUGGESTIONS: ReadonlyArray<{ en: string; ja: string }> = [
 /** Markdown report with the sections defined in the spec. */
 export function renderMarkdown(report: ScanReport, locale: Locale): string {
   const m = getMessages(locale);
+  const second = otherLocale(locale);
+  const mSecond = getMessages(second);
   const counts = countBySeverity(report.findings);
   const md: string[] = [];
   md.push('# Aster Guard MCP Security Report');
@@ -236,11 +250,13 @@ export function renderMarkdown(report: ScanReport, locale: Locale): string {
         if (f.file) md.push(`- ${m.file}: \`${f.file}\`${f.path ? ` (\`${f.path}\`)` : ''}`);
         if (f.redactedEvidence) md.push(`- ${m.evidence}: \`${f.redactedEvidence}\``);
         md.push('');
-        md.push(locale === 'ja' ? f.explanationJa : f.explanationEn);
+        md.push(explanationFor(f, locale));
         md.push('');
-        md.push(
-          `**${m.recommendation}:** ${locale === 'ja' ? f.recommendationJa : f.recommendationEn}`,
-        );
+        md.push(`_${explanationFor(f, second)}_`);
+        md.push('');
+        md.push(`**${m.recommendation}:** ${recommendationFor(f, locale)}`);
+        md.push('');
+        md.push(`**${mSecond.recommendation}:** ${recommendationFor(f, second)}`);
         md.push('');
       }
     }
