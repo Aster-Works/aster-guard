@@ -12,8 +12,13 @@ Aster Guard answers one practical question before you connect an MCP server to y
 > **"Is this MCP server or `.mcp.json` configuration safe enough to connect?"**
 
 ```bash
-npx @asterworks/aster-guard scan
+npx -y @asterworks/aster-guard scan
 ```
+
+![Aster Guard scan demo showing critical, high, and medium MCP configuration findings](docs/assets/aster-guard-scan-demo.png)
+
+Demo output from a sample risky `.mcp.json`. Secrets are fake and redacted.
+デモ用の危険な `.mcp.json` をスキャンしたサンプルです。秘密情報は架空・マスク済みです。
 
 ## What it does
 
@@ -79,7 +84,7 @@ Comparison notes are based on the public project documentation linked above.
 
 ```bash
 # one-off
-npx @asterworks/aster-guard scan
+npx -y @asterworks/aster-guard scan
 
 # or install globally
 npm install -g @asterworks/aster-guard
