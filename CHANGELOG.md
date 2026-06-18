@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.3.1 (2026-06-19)
+
+- Add a README demo image showing sample scan output from a risky `.mcp.json`.
+- Update GitHub Action usage examples and package metadata for the `Aster-Works/aster-guard`
+  organization repository.
 - Terminal and Markdown reports now include optional links to star the project, report issues,
   share on X, or send GitHub Issue Form feedback. JSON/SARIF outputs remain unchanged.
 - Terminal and Markdown reports are now bilingual: each finding shows its explanation and
@@ -24,7 +29,7 @@
   code is never downloaded or executed. The `safe_install_plan` MCP tool honors `allowNetwork` too.
 - `scan --fail-on <severity>`: configurable exit-code threshold (critical|high|medium|low|info|never)
 - `scan <directory>`: a directory argument now runs config discovery inside it
-- Composite GitHub Action (`uses: jimiaki7/aster-guard@main`) with `path` / `fail-on` / `sarif` inputs
+- Composite GitHub Action (`uses: Aster-Works/aster-guard@main`) with `path` / `fail-on` / `sarif` inputs
 - CI workflow (lint, typecheck, tests, demo self-scan)
 - `examples/demo-risky.mcp.json` demo fixture
 
