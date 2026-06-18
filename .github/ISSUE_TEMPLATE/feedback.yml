@@ -1,0 +1,44 @@
+name: Feedback
+description: Share optional feedback about Aster Guard.
+title: '[Feedback]: '
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for trying Aster Guard.
+
+        This form is public on GitHub and is attached to your GitHub account. Please do not paste real secrets, private MCP configs, tokens, or customer data.
+  - type: dropdown
+    id: usage
+    attributes:
+      label: How did you use Aster Guard?
+      options:
+        - One-off local scan
+        - Claude Code MCP server
+        - GitHub Actions / CI
+        - check-install
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: useful
+    attributes:
+      label: What was useful?
+      description: Tell us what helped you decide whether an MCP config was safe enough to connect.
+    validations:
+      required: false
+  - type: textarea
+    id: confusing
+    attributes:
+      label: What was confusing or missing?
+      description: Mention any unclear finding, missing rule, or workflow gap.
+    validations:
+      required: false
+  - type: input
+    id: version
+    attributes:
+      label: Aster Guard version
+      description: Run `npx -y @asterworks/aster-guard --version` if you are not sure.
+      placeholder: '0.3.0'
+    validations:
+      required: false

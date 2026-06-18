@@ -72,6 +72,32 @@ function findingDisplayName(f: Finding, locale: Locale): string {
 
 const otherLocale = (locale: Locale): Locale => (locale === 'ja' ? 'en' : 'ja');
 
+const PROJECT_URL = 'https://github.com/Aster-Works/aster-guard';
+const ISSUE_URL = `${PROJECT_URL}/issues/new`;
+const FEEDBACK_URL = `${PROJECT_URL}/issues/new?template=feedback.yml`;
+const X_SHARE_URL =
+  'https://twitter.com/intent/tweet?' +
+  new URLSearchParams({
+    text: 'I checked my MCP config with Aster Guard before connecting it.',
+    url: PROJECT_URL,
+  }).toString();
+
+const SUPPORT_LINKS = [
+  { key: 'nextStepStar', url: PROJECT_URL },
+  { key: 'nextStepIssue', url: ISSUE_URL },
+  { key: 'nextStepShare', url: X_SHARE_URL },
+  { key: 'nextStepFeedback', url: FEEDBACK_URL },
+] as const;
+
+function appendTerminalNextSteps(lines: string[], locale: Locale): void {
+  const m = getMessages(locale);
+  lines.push('');
+  lines.push(pc.bold(`${m.nextStepsTitle}:`));
+  for (const link of SUPPORT_LINKS) {
+    lines.push(`  - ${m[link.key]}: ${link.url}`);
+  }
+}
+
 function explanationFor(f: Finding, locale: Locale): string {
   return locale === 'ja' ? f.explanationJa : f.explanationEn;
 }
@@ -104,6 +130,7 @@ export function renderTerminal(report: ScanReport, locale: Locale): string {
 
   if (report.findings.length === 0) {
     lines.push(pc.green(m.noFindings));
+    appendTerminalNextSteps(lines, locale);
     return lines.join('\n') + '\n';
   }
 
@@ -121,6 +148,7 @@ export function renderTerminal(report: ScanReport, locale: Locale): string {
       lines.push('');
     }
   }
+  appendTerminalNextSteps(lines, locale);
   return lines.join('\n').trimEnd() + '\n';
 }
 
@@ -282,6 +310,12 @@ export function renderMarkdown(report: ScanReport, locale: Locale): string {
     md.push(m.noScannedFiles);
   } else {
     for (const f of report.scannedFiles) md.push(`- \`${f}\``);
+  }
+  md.push('');
+  md.push('## Next Steps');
+  md.push('');
+  for (const link of SUPPORT_LINKS) {
+    md.push(`- **${m[link.key]}**: ${link.url}`);
   }
   md.push('');
   return md.join('\n');

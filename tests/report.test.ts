@@ -10,6 +10,7 @@ import {
 } from '../src/core/report.js';
 
 const critical = path.join(__dirname, 'fixtures', 'critical', '.mcp.json');
+const safe = path.join(__dirname, 'fixtures', 'safe', '.mcp.json');
 const RAW_TOKEN = 'AbCd1234EfGh5678IjKl9012MnOp3456QrSt';
 
 describe('report rendering', () => {
@@ -26,7 +27,19 @@ describe('report rendering', () => {
     const report = await scan({ file: critical });
     const out = renderTerminal(report, 'en');
     expect(out).toContain('Risk Score');
+    expect(out).toContain('Star the project');
+    expect(out).toContain(
+      'https://github.com/Aster-Works/aster-guard/issues/new?template=feedback.yml',
+    );
     expect(out).not.toContain(RAW_TOKEN);
+  });
+
+  it('renders next steps even when no findings exist', async () => {
+    const report = await scan({ file: safe });
+    const out = renderTerminal(report, 'en');
+    expect(out).toContain('No security issues were found');
+    expect(out).toContain('Share on X');
+    expect(out).toContain('https://twitter.com/intent/tweet?');
   });
 
   it('shows both Japanese and English for each finding (terminal)', async () => {
@@ -61,9 +74,11 @@ describe('report rendering', () => {
       '## Recommended Fixes',
       '## Safe Configuration Suggestions',
       '## Appendix: Scanned Files',
+      '## Next Steps',
     ]) {
       expect(md).toContain(section);
     }
+    expect(md).toContain('任意フィードバックを送る');
     expect(md).not.toContain(RAW_TOKEN);
   });
 

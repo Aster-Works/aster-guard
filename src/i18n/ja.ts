@@ -12,6 +12,11 @@ export const ja: Messages = {
   file: 'ファイル',
   evidence: '該当箇所',
   recommendation: '対策',
+  nextStepsTitle: '次のアクション',
+  nextStepStar: 'Starで応援',
+  nextStepIssue: '不具合・要望を報告',
+  nextStepShare: 'Xで共有',
+  nextStepFeedback: '任意フィードバックを送る',
   severityName: {
     critical: '重大',
     high: '高',

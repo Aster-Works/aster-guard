@@ -12,6 +12,11 @@ export interface Messages {
   file: string;
   evidence: string;
   recommendation: string;
+  nextStepsTitle: string;
+  nextStepStar: string;
+  nextStepIssue: string;
+  nextStepShare: string;
+  nextStepFeedback: string;
   severityName: Record<Severity, string>;
   summaryCounts: (counts: Record<Severity, number>) => string;
   summaryClean: string;
@@ -30,6 +35,11 @@ export const en: Messages = {
   file: 'File',
   evidence: 'Evidence',
   recommendation: 'Recommendation',
+  nextStepsTitle: 'Next steps',
+  nextStepStar: 'Star the project',
+  nextStepIssue: 'Report an issue',
+  nextStepShare: 'Share on X',
+  nextStepFeedback: 'Send optional feedback',
   severityName: {
     critical: 'Critical',
     high: 'High',

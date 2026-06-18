@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Terminal and Markdown reports now include optional links to star the project, report issues,
+  share on X, or send GitHub Issue Form feedback. JSON/SARIF outputs remain unchanged.
 - Terminal and Markdown reports are now bilingual: each finding shows its explanation and
   recommendation in the primary (locale) language followed by the other language. Labels,
   score, and structure stay in the locale language. JSON/SARIF are unchanged (already bilingual).

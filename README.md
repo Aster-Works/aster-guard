@@ -33,6 +33,7 @@ Demo output from a sample risky `.mcp.json`. Secrets are fake and redacted.
 - Produces a risk score (0–100), a grade (A–F), and terminal / JSON / Markdown reports
 - Explains every finding in **plain Japanese and English**
 - Runs as a local **MCP server** so Claude Code can call it as a tool
+- Shows optional Star / Issue / X share / feedback links after terminal scans — no telemetry, just links
 
 ## What it does NOT do
 
