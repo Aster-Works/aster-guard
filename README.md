@@ -18,7 +18,7 @@ npx @asterworks/aster-guard scan
 ## What it does
 
 - Discovers and scans `.mcp.json`, `~/.claude.json`, `.claude/settings(.local).json`, `.env*`, plus Cursor / VS Code / Windsurf / Cline / Gemini CLI MCP configs
-- Detects 11 classes of risk (rules `AG-001` … `AG-011`):
+- Detects 12 classes of risk (rules `AG-001` … `AG-012`):
   - hidden agent instructions in tool descriptions (Tool Poisoning / prompt injection)
   - references to sensitive files (`~/.ssh`, AWS credentials, `.env`, …)
   - shell execution (`bash -c …`), dangerous installs (`curl | bash`)
@@ -32,10 +32,48 @@ npx @asterworks/aster-guard scan
 ## What it does NOT do
 
 - It does not execute or start any MCP server it scans — static analysis only
-- It does not fetch remote code or call any external API (v0.1 is fully offline)
-- It does not send telemetry — nothing leaves your machine
+- Normal scans do not fetch remote code or call external APIs; package/GitHub metadata checks require explicit `--allow-network`
+- It does not send telemetry
 - It does not modify files unless you explicitly pass `--write` (and then it backs up first)
 - It is not an antivirus, SIEM, or Snyk replacement — it is a focused pre-connection check
+
+## Which scanner should I use? / どのスキャナーを使うべき？
+
+If you are new to MCP: an MCP server is a small bridge that lets an AI tool reach
+things outside the chat, such as files, databases, browsers, SaaS APIs, and shell
+commands. That power is useful, but it also means a single `.mcp.json` entry can
+run a command, expose a token, or give the agent access to data you did not mean
+to share.
+
+MCP初心者向けに言うと、MCPサーバーはAIツールに「外の世界」への手足を与える
+小さな橋です。ファイル、データベース、ブラウザ、SaaS API、シェルコマンドな
+どに届くようになります。便利ですが、その分、`.mcp.json` の1行がコマンド実行
+やトークン露出、意図しないデータアクセスにつながることがあります。
+
+| Tool                                                       | Best fit                                                                                      | How it scans                                                                               | Privacy / execution posture                                                                                                                                       | Choose it when...                                                                                             |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| **Aster Guard**                                            | Pre-connection MCP config safety check for Claude Code users, indie builders, and small teams | Static analysis of MCP/config files, install commands, policies, and baselines             | Local-first; does not start scanned MCP servers; no telemetry; no external API calls unless you opt into metadata checks                                          | You want a quick, readable answer to: "Is this MCP config safe enough to connect?"                            |
+| **[mcp-scan](https://gitlab.com/abanoub.rodolf/mcp-scan)** | Broader MCP security, supply-chain, privacy, compliance, and CI scanning                      | Local config analysis with optional registry lookups for supply-chain checks               | Local analysis; no sign-up; optional npm registry lookups can be disabled with `--offline`                                                                        | You need wider MCP coverage, data-flow/privacy checks, compliance mapping, SBOM, or policy-driven CI          |
+| **[Snyk Agent Scan](https://github.com/snyk/agent-scan)**  | Enterprise-oriented inventory and risk assessment for agents, MCP servers, and skills         | Discovers agent components and, for MCP, connects to servers to retrieve tool descriptions | Requires care with untrusted configs: its docs state MCP config scanning starts the configured stdio servers after consent; analysis also uses the Agent Scan API | Your organization already uses Snyk/Evo, needs fleet-level visibility, or wants broad agent + skill inventory |
+
+| ツール                                                     | 向いている用途                                                                          | スキャン方法                                                                      | プライバシー / 実行面の姿勢                                                                                                                                      | 選ぶ場面                                                                                            |
+| ---------------------------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Aster Guard**                                            | Claude Codeユーザー、個人開発者、小規模チーム向けの「接続前」MCP設定チェック            | MCP/設定ファイル、インストールコマンド、ポリシー、ベースラインを静的解析          | ローカル優先。スキャン対象のMCPサーバーを起動しない。テレメトリなし。メタデータ確認を明示的に有効化しない限り外部APIなし                                         | 「このMCP設定を接続してよいか」を素早く、日本語でも理解したいとき                                   |
+| **[mcp-scan](https://gitlab.com/abanoub.rodolf/mcp-scan)** | MCPのセキュリティ、サプライチェーン、プライバシー、コンプライアンス、CIを広く見たい場合 | ローカル設定解析に加え、サプライチェーン確認のための任意のレジストリ参照          | ローカル解析中心。サインアップ不要。npmレジストリ参照は `--offline` で無効化可能                                                                                 | より広いMCP対応、データフロー/プライバシー確認、コンプライアンス対応、SBOM、ポリシーCIが必要なとき  |
+| **[Snyk Agent Scan](https://github.com/snyk/agent-scan)**  | 企業向けのエージェント、MCPサーバー、スキルの棚卸しとリスク評価                         | エージェント構成要素を検出し、MCPについてはツール説明を取得するためサーバーへ接続 | 信頼できない設定では注意が必要。公式READMEでは、MCP設定のスキャン時に同意後、設定されたstdioサーバーを起動すると説明されている。解析にはAgent Scan APIも使われる | すでにSnyk/Evoを使っている組織、端末全体の可視化、エージェント/スキルを含む広範な棚卸しが必要なとき |
+
+**Aster Guard's niche is intentionally narrow:** it is the small, fast,
+read-only gate you run before connecting an MCP server. Use it first when you do
+not yet trust a config. Use broader scanners later when you need runtime,
+enterprise, compliance, or organization-wide inventory workflows.
+
+**Aster Guardの立ち位置は、あえて狭くしています。** MCPサーバーを接続する
+前に実行する、小さく速い、読み取り専用の入口チェックです。まだ信頼できない
+設定にはまずAster Guardを使い、その後、ランタイム監視、企業管理、
+コンプライアンス、組織全体の棚卸しが必要になったら、より広いスキャナーを併用してください。
+
+Comparison notes are based on the public project documentation linked above.
+比較内容は、上記リンク先の各プロジェクト公開ドキュメントをもとにしています。
 
 ## Installation
 
@@ -192,7 +230,7 @@ Aster Guard itself must be safer than the things it scans:
 
 1. **Local-first** — everything runs on your machine
 2. **Read-only by default** — `--write` is the only way it modifies anything, with a timestamped backup first
-3. **No telemetry, no external API calls** in v0.1
+3. **No telemetry** — normal scans do not call external APIs; `check-install --allow-network` only fetches npm/GitHub metadata when you ask for it
 4. **Never executes** scanned commands and never starts third-party MCP servers
 5. **Secrets are always redacted** — full values never appear in any output (terminal, JSON, Markdown, or MCP)
 
