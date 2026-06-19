@@ -4,6 +4,7 @@ Draft launch materials for Aster Guard MCP.
 
 - English article: `2026-06-19-aster-guard-marketplace-en.md`
 - Japanese article: `2026-06-19-aster-guard-marketplace-ja.md`
+- dev.to / Hashnode draft: `2026-06-19-devto-first-marketplace-action-en.md`
 - Zenn draft: `../../articles/aster-guard-mcp-marketplace.md`
 - Social post drafts: `social-posts.md`
 
