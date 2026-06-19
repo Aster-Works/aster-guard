@@ -2,6 +2,10 @@
 
 Draft launch materials for Aster Guard MCP.
 
+Zenn CLI expects both `articles/` and `books/` to exist in the repository root.
+The `books/.gitkeep` file keeps the empty `books/` directory under version
+control even when no Zenn books are published.
+
 - English article: `2026-06-19-aster-guard-marketplace-en.md`
 - Japanese article: `2026-06-19-aster-guard-marketplace-ja.md`
 - dev.to / Hashnode draft: `2026-06-19-devto-first-marketplace-action-en.md`
