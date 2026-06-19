@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.3.2 (2026-06-19)
+
+- Use an absolute GitHub-hosted demo image URL so the README image renders on npmjs.com.
+- Update the GitHub Action example to `Aster-Works/aster-guard@v0.3.2`.
+
 ## 0.3.1 (2026-06-19)
 
 - Add a README demo image showing sample scan output from a risky `.mcp.json`.
