@@ -57,3 +57,41 @@ Aster Guard MCP is a lightweight, local-first scanner for MCP and Claude Code co
 ## dev.to / Hashnode title
 
 I published my first GitHub Marketplace Action: Aster Guard MCP
+
+## X / English / dev.to
+
+I published my first GitHub Marketplace Action: Aster Guard MCP.
+
+It is a lightweight, local-first security check for MCP and Claude Code config files. It scans before you connect, without starting the MCP servers it checks.
+
+Feedback welcome:
+https://dev.to/asterworks/i-published-my-first-github-marketplace-action-aster-guard-mcp-1d74
+
+## X / Japanese / dev.to
+
+初めてのGitHub Marketplace Actionとして、Aster Guard MCPを公開しました。
+
+MCP / Claude Code設定を接続前にローカルで静的チェックする、小さなセキュリティ診断ツールです。
+
+英語記事はこちら:
+https://dev.to/asterworks/i-published-my-first-github-marketplace-action-aster-guard-mcp-1d74
+
+## Bluesky / English
+
+I published my first GitHub Marketplace Action: Aster Guard MCP.
+
+It checks MCP / Claude Code config files before you connect an MCP server. Local-first, static, no telemetry, and it does not start the servers it scans.
+
+https://dev.to/asterworks/i-published-my-first-github-marketplace-action-aster-guard-mcp-1d74
+
+## LinkedIn / English
+
+I published my first GitHub Marketplace Action: Aster Guard MCP.
+
+MCP makes AI coding tools much more useful by connecting them to files, commands, browsers, databases, and APIs. That also makes MCP configuration a meaningful security boundary.
+
+Aster Guard MCP is a lightweight, local-first scanner for MCP and Claude Code configuration files. It is intentionally narrow: check the config before connecting the server.
+
+I would appreciate practical feedback, especially from people experimenting with MCP in real development workflows.
+
+https://dev.to/asterworks/i-published-my-first-github-marketplace-action-aster-guard-mcp-1d74
