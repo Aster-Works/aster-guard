@@ -2,6 +2,31 @@
 
 ## Unreleased
 
+## 0.4.0 (2026-06-30)
+
+### New detection rules — runtime & supply-chain threats
+
+- **AG-013 Runtime Environment Variable Injection** (`critical`) — flags environment variables
+  that the OS or language runtime reads at process startup before any user code runs:
+  `NODE_OPTIONS`, `LD_PRELOAD`, `DYLD_INSERT_LIBRARIES`, `PYTHONSTARTUP`, `PERL5OPT`,
+  `JAVA_TOOL_OPTIONS`, and others. Setting these in an MCP server's `env` block allows injecting
+  arbitrary code or shared libraries into every process the server spawns.
+  Applies to both MCP configs and `.env` files.
+
+- **AG-014 Package Name Typosquatting** (`critical`) — detects npm/npx package names that are
+  character-level typos of well-known MCP packages (e.g. `@modelcontextprotocol/server-githb`,
+  `@modelcontextprot0col/…`). Catches vowel-drop, vowel-swap, digit-substitution, and
+  scope-spoofing patterns against the `@modelcontextprotocol/*` family and common community
+  server names.
+
+- **AG-015 Privilege Escalation Pattern** (`critical`) — flags commands that attempt to gain
+  elevated privileges: `sudo -S` (stdin password), `su root`, `nsenter` (container escape),
+  `docker --privileged`, `docker --cap-add SYS_ADMIN/ALL`, root bind-mounts (`-v /:`),
+  `chmod +s` / setuid `install`, `setcap` (Linux capabilities), `ptrace` / `gdb --pid`
+  (process injection), and kernel module loading (`insmod`, `modprobe`).
+  MCP servers should never need root or capability grants; their presence is a strong
+  indicator of malicious intent.
+
 ## 0.3.2 (2026-06-19)
 
 - Use an absolute GitHub-hosted demo image URL so the README image renders on npmjs.com.

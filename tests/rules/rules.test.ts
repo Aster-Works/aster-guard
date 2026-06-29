@@ -12,6 +12,9 @@ import { AG008 } from '../../src/rules/AG008-tool-shadowing.js';
 import { AG009 } from '../../src/rules/AG009-obfuscation.js';
 import { AG010 } from '../../src/rules/AG010-destructive-command.js';
 import { AG011 } from '../../src/rules/AG011-credential-transmission.js';
+import { AG013 } from '../../src/rules/AG013-runtime-env-injection.js';
+import { AG014 } from '../../src/rules/AG014-package-typosquatting.js';
+import { AG015 } from '../../src/rules/AG015-privilege-escalation.js';
 
 function mcpTarget(json: unknown): ScanTarget {
   return {
@@ -259,5 +262,119 @@ describe('AG-011 credential transmission', () => {
   });
   it('passes normal servers', () => {
     expect(AG011.check(SAFE)).toHaveLength(0);
+  });
+});
+
+describe('AG-013 runtime environment injection', () => {
+  it('flags NODE_OPTIONS in server env at high confidence', () => {
+    const t = server({ command: 'node', args: ['server.js'], env: { NODE_OPTIONS: '--require=./evil.js' } });
+    const findings = AG013.check(t);
+    expect(findings.length).toBeGreaterThan(0);
+    expect(findings[0]?.severity).toBe('critical');
+    expect(findings[0]?.confidence).toBe('high');
+  });
+  it('flags LD_PRELOAD in server env', () => {
+    const t = server({ command: 'node', args: ['server.js'], env: { LD_PRELOAD: '/tmp/evil.so' } });
+    const findings = AG013.check(t);
+    expect(findings.length).toBeGreaterThan(0);
+    expect(findings[0]?.confidence).toBe('high');
+  });
+  it('flags DYLD_INSERT_LIBRARIES in server env', () => {
+    const t = server({ command: 'node', args: ['server.js'], env: { DYLD_INSERT_LIBRARIES: '/tmp/evil.dylib' } });
+    expect(AG013.check(t).length).toBeGreaterThan(0);
+  });
+  it('flags NODE_OPTIONS inline in command string', () => {
+    const t = server({ command: 'bash', args: ['-c', 'NODE_OPTIONS=--require=./evil.js node server.js'] });
+    expect(AG013.check(t).length).toBeGreaterThan(0);
+  });
+  it('flags NODE_OPTIONS in env-file', () => {
+    const t: ScanTarget = {
+      file: '/test/.env',
+      kind: 'env-file',
+      raw: '',
+      servers: [],
+      envVars: [{ key: 'NODE_OPTIONS', value: '--require=./evil.js', line: 1 }],
+    };
+    expect(AG013.check(t).length).toBeGreaterThan(0);
+  });
+  it('passes safe env vars', () => {
+    expect(AG013.check(SAFE)).toHaveLength(0);
+  });
+  it('passes safe env-file', () => {
+    const t: ScanTarget = {
+      file: '/test/.env',
+      kind: 'env-file',
+      raw: '',
+      servers: [],
+      envVars: [{ key: 'LOG_LEVEL', value: 'debug', line: 1 }],
+    };
+    expect(AG013.check(t)).toHaveLength(0);
+  });
+});
+
+describe('AG-014 package typosquatting', () => {
+  it('flags typosquatted @modelcontextprotocol scope', () => {
+    const t = server({ command: 'npx', args: ['-y', '@modelcontextprot0col/server-github'] });
+    expect(AG014.check(t).length).toBeGreaterThan(0);
+  });
+  it('flags server-githb (typo of server-github)', () => {
+    const t = server({ command: 'npx', args: ['-y', '@modelcontextprotocol/server-githb'] });
+    expect(AG014.check(t).length).toBeGreaterThan(0);
+  });
+  it('does not flag the legitimate server-github package', () => {
+    expect(AG014.check(SAFE)).toHaveLength(0);
+  });
+  it('does not flag the official server-filesystem', () => {
+    const t = server({ command: 'npx', args: ['-y', '@modelcontextprotocol/server-filesystem', './src'] });
+    expect(AG014.check(t)).toHaveLength(0);
+  });
+  it('does not flag env-file targets', () => {
+    const t: ScanTarget = {
+      file: '/test/.env',
+      kind: 'env-file',
+      raw: '',
+      servers: [],
+      envVars: [{ key: 'PKG', value: '@modelcontextprotocol/server-githb', line: 1 }],
+    };
+    expect(AG014.check(t)).toHaveLength(0);
+  });
+});
+
+describe('AG-015 privilege escalation', () => {
+  it('flags sudo -S (stdin password) at high confidence', () => {
+    const t = server({ command: 'bash', args: ['-c', 'echo pass | sudo -S npm install -g x'] });
+    const findings = AG015.check(t);
+    expect(findings.length).toBeGreaterThan(0);
+    expect(findings[0]?.confidence).toBe('high');
+    expect(findings[0]?.severity).toBe('critical');
+  });
+  it('flags nsenter (container escape)', () => {
+    const t = server({ command: 'bash', args: ['-c', 'nsenter --target 1 --mount --uts --ipc --net --pid'] });
+    expect(AG015.check(t).length).toBeGreaterThan(0);
+  });
+  it('flags docker --privileged', () => {
+    const t = server({ command: 'docker', args: ['run', '--privileged', 'myimage'] });
+    expect(AG015.check(t).length).toBeGreaterThan(0);
+  });
+  it('flags chmod +s (setuid)', () => {
+    const t = server({ command: 'bash', args: ['-c', 'chmod +s /usr/bin/node'] });
+    expect(AG015.check(t).length).toBeGreaterThan(0);
+  });
+  it('flags insmod (kernel module)', () => {
+    const t = server({ command: 'bash', args: ['-c', 'insmod /tmp/evil.ko'] });
+    expect(AG015.check(t).length).toBeGreaterThan(0);
+  });
+  it('passes normal npx servers', () => {
+    expect(AG015.check(SAFE)).toHaveLength(0);
+  });
+  it('does not flag env-file targets', () => {
+    const t: ScanTarget = {
+      file: '/test/.env',
+      kind: 'env-file',
+      raw: '',
+      servers: [],
+      envVars: [{ key: 'SUDO_USER', value: 'root', line: 1 }],
+    };
+    expect(AG015.check(t)).toHaveLength(0);
   });
 });
