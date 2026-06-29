@@ -1,21 +1,6 @@
-import type { Confidence } from '../types/finding.js';
 import type { Rule } from './rule.js';
 import { makeFinding, scanUnits } from './helpers.js';
-
-const PHRASES: ReadonlyArray<{ re: RegExp; confidence: Confidence }> = [
-  {
-    re: /ignore\s+(?:all\s+|any\s+)?(?:previous\s+|prior\s+|above\s+)?instructions/i,
-    confidence: 'high',
-  },
-  { re: /do\s+not\s+(?:tell|inform|notify|alert)\s+the\s+user/i, confidence: 'high' },
-  { re: /without\s+(?:mentioning|telling|informing|notifying)/i, confidence: 'high' },
-  { re: /hidden\s+instruction/i, confidence: 'high' },
-  { re: /\bsecretly\b/i, confidence: 'medium' },
-  { re: /\bsilently\b/i, confidence: 'medium' },
-  { re: /system\s+prompt/i, confidence: 'medium' },
-  { re: /developer\s+message/i, confidence: 'medium' },
-  { re: /before\s+using\s+this\s+tool/i, confidence: 'medium' },
-];
+import { INJECTION_PHRASES as PHRASES } from './injection-phrases.js';
 
 export const AG001: Rule = {
   id: 'AG-001',

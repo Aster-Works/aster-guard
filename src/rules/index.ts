@@ -14,6 +14,7 @@ import { AG012 } from './AG012-rug-pull.js';
 import { AG013 } from './AG013-runtime-env-injection.js';
 import { AG014 } from './AG014-package-typosquatting.js';
 import { AG015 } from './AG015-privilege-escalation.js';
+import { AG016 } from './AG016-unicode-steganography.js';
 
 export const allRules: readonly Rule[] = [
   AG001,
@@ -31,6 +32,7 @@ export const allRules: readonly Rule[] = [
   AG013,
   AG014,
   AG015,
+  AG016,
 ];
 
 /** Look up a rule by id, tolerating formats like "ag003", "AG-003", "AG003". */

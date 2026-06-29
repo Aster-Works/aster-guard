@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+## 0.5.0 (2026-06-30)
+
+### New detection rule — hidden Unicode / steganographic text
+
+- **AG-016 Hidden Unicode / Steganographic Text** — detects deceptive characters that are
+  invisible or misleading when rendered, which have no legitimate place in an MCP config and are
+  a known way to hide prompt-injection instructions from both humans and keyword scanners:
+  - **Unicode Tag characters** (U+E0000–E007F) — invisible, decode to ASCII ("ASCII smuggling") — `critical`
+  - **bidirectional overrides** (RLO/LRO/…) — reorder displayed text vs. real bytes (Trojan Source, CVE-2021-42574) — `high`
+  - **ANSI / terminal escape sequences** — hide or rewrite text in a terminal — `high`
+  - **zero-width / invisible formatting characters** (ZWSP, word joiner, BOM, soft hyphen, …) — used to split words past keyword filters — `medium`
+  - **smuggling variation selectors** (U+E0100–E01EF) — encode hidden data — `medium`
+  - **mixed-script homoglyphs** (Latin combined with Cyrillic/Greek in one word) — imitate trusted names / evade filters — `medium`
+  - **Rendered-vs-raw two-stage check**: when removing the hidden characters reveals a prompt-injection
+    instruction that was not matchable in the raw string (e.g. a zero-width space splitting
+    `ig​nore previous instructions`), the finding is escalated to **critical**.
+  - Reports visualize every hidden character as a `‹U+XXXX›` marker so you can see exactly what was concealed.
+  - Designed for low false positives: legitimate non-Latin text (Japanese, etc.), emoji, the
+    emoji-presentation selector U+FE0F, and emoji ZWJ sequences are **not** flagged.
+- AG-001 and AG-016 now share a single injection-phrase list (`src/rules/injection-phrases.ts`); no behavior change to AG-001.
+- README rule count updated to 16 (AG-001 … AG-016).
+
 ## 0.4.0 (2026-06-30)
 
 ### New detection rules — runtime & supply-chain threats

@@ -23,13 +23,15 @@ Demo output from a sample risky `.mcp.json`. Secrets are fake and redacted.
 ## What it does
 
 - Discovers and scans `.mcp.json`, `~/.claude.json`, `.claude/settings(.local).json`, `.env*`, plus Cursor / VS Code / Windsurf / Cline / Gemini CLI MCP configs
-- Detects 12 classes of risk (rules `AG-001` … `AG-012`):
+- Detects 16 classes of risk (rules `AG-001` … `AG-016`):
   - hidden agent instructions in tool descriptions (Tool Poisoning / prompt injection)
   - references to sensitive files (`~/.ssh`, AWS credentials, `.env`, …)
   - shell execution (`bash -c …`), dangerous installs (`curl | bash`)
   - hardcoded secrets (always redacted in output)
   - overbroad filesystem access, unknown remote servers, tool-name shadowing
   - obfuscated code (`eval`, `base64 -d`, `node -e`), destructive commands (`rm -rf`, `sudo`), credential exfiltration endpoints
+  - runtime env-var injection (`NODE_OPTIONS`, `LD_PRELOAD`, `DYLD_INSERT_LIBRARIES`, …), package typosquatting, privilege escalation (`sudo -S`, `nsenter`, `docker --privileged`, …)
+  - hidden Unicode / steganographic text — zero-width characters, Unicode Tags (ASCII smuggling), bidi overrides (Trojan Source), ANSI escapes, and mixed-script homoglyphs; with a rendered-vs-raw check that escalates to **critical** when removing invisible characters reveals an injection instruction
 - Produces a risk score (0–100), a grade (A–F), and terminal / JSON / Markdown reports
 - Explains every finding in **plain Japanese and English**
 - Runs as a local **MCP server** so Claude Code can call it as a tool
